@@ -34,7 +34,7 @@ body::-webkit-scrollbar {
   position: relative; /* Essential for absolute positioning of windows */
   box-sizing: border-box;
   padding: var(--hypr-gaps);
-  overflow: auto;
+  overflow: hidden;
 }
 
 /* Window Styling */
