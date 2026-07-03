@@ -1,0 +1,44 @@
+html, body {
+  background-color: #151217;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+* {
+  font-family: 'Xanh Mono', monospace, sans-serif;
+  color: #ffffff;
+}
+
+::selection {
+  background-color: #ddb9f8;
+  color: #2a1f2e;
+}
+
+#header {
+  width: 85%;
+  padding: 11px;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+}
+
+#first {
+  display: flex;
+  justify-content: center;
+}
+
+#header-description {
+  padding: 11px;
+}
+
+#rustandpython {
+  padding: 0 4px;
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  background-size: 0% 100%;
+  background-image: linear-gradient(to right, #473b4f, #ddb9f8);
+  border-radius: 3px;
+}

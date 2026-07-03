@@ -1,0 +1,29 @@
+:root {
+  --active-border: #ae84cf; 
+  --inactive-border: #2c2d38af; 
+  --hypr-rounding: 10px;
+  --hypr-gaps: 10px;
+  
+  --generic-window-bg: #201a22;
+  --generic-window-text: #cdd6f4;
+  --generic-window-accent: #ae84cf;
+}
+
+
+.window {
+    background: var(--generic-window-bg);
+    border: 2px solid var(--inactive-border);
+    border-radius: var(--hypr-rounding);
+    overflow: auto;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    z-index: 1;
+
+    transition: border-color 0.4s cubic-bezier(0.23, 1, 0.32, 1), 
+              box-shadow 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.window:hover {
+    border-color: var(--active-border);
+}
