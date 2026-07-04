@@ -49,6 +49,7 @@ function setup() {
   const target = document.querySelector("#header h1");
   if (target) {
     split = new SplitText(target, { type: "words" });
+    gsap.set(target, { visibility: "visible" });
   }
 }
 

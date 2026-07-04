@@ -27,3 +27,8 @@
 .window:hover {
     border-color: var(--active-border);
 }
+
+.window {
+  opacity: 0;
+  transform: scale(0.92) translateY(40px);
+}

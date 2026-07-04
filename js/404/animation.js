@@ -67,6 +67,15 @@ function setup() {
   const target = document.querySelector("#header");
   if (target) {
     split = new SplitText(target, { type: "words" });
+    gsap.set(target, { visibility: "visible" });
+  }
+  const target2 = document.querySelector("#description");
+  if (target2) {
+    gsap.set(target2, { visibility: "visible" });
+  }
+  const target3 = document.querySelector("#goback");
+  if (target3) {
+    gsap.set(target3, { visibility: "visible" });
   }
 }
 

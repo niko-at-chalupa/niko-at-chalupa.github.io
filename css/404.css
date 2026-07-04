@@ -18,8 +18,10 @@ body {
 
 #description {
     font-family: 'Doto', Helvetica;
+    visibility: hidden;
 }
 
 #goback {
   font-size: 0.8333em;
+  visibility: hidden;
 }
