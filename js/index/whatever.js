@@ -17,7 +17,8 @@ function playAnimation() {
     opacity: 0,
     duration: 0.3,
     ease: "power1.out",
-    stagger: 0.05
+    stagger: 0.05,
+    rotationX: 40,
   });
 
   // 2. Animate the backgrounds growing
