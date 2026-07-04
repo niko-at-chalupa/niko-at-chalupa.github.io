@@ -54,9 +54,3 @@ function setup() {
 
 setup();
 playAnimation();
-
-document.querySelector("#words")?.addEventListener("click", playAnimation);
-window.addEventListener("resize", () => {
-  setup();
-  playAnimation();
-});

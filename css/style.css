@@ -16,3 +16,19 @@ html, body {
   background-color: #ddb9f8;
   color: #2a1f2e;
 }
+
+#page-transition-overlay {
+  position: fixed;
+  inset: 0;
+  background: #151217;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 9999;
+  display: flex;
+  justify-content: center;
+}
+
+#page-transition-overlay img {
+  opacity: 0;
+  width: 80px;
+}
