@@ -27,6 +27,12 @@ function playAnimation() {
     ease: "power2.out",
     stagger: 0.2
   }, "-=0.2"); 
+  // no idea why but this makes it look better
+  animation.from("#rustandpython", {
+    duration: 0.1,
+    ease: "power2.in",
+    //stagger: 0.2
+  }, "-=0.2"); 
 
   // 3. Transition the gradient color AT THE SAME TIME as the growth
   animation.to("#rustandpython", {
