@@ -1,0 +1,32 @@
+#header {
+  width: 85%;
+  padding: 11px;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+}
+
+#first {
+  display: flex;
+  justify-content: center;
+}
+
+#header-description {
+  padding: 11px;
+  display: flex;
+  justify-content: space-between; 
+  align-items: center;
+}
+
+#rustandpython {
+  padding: 0 4px;
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  background-size: 0% 100%;
+  background-image: linear-gradient(to right, #473b4f, #ddb9f8);
+  border-radius: 3px;
+}
+
+#header h1 {
+  visibility: hidden;
+}
