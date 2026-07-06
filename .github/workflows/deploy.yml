@@ -39,22 +39,48 @@ jobs:
         run: npm ci
       - name: Build
         run: npm run build
+
+      # Detect the correct build output directory (dist, build, public, out) and set BUILD_DIR
+      - name: Determine build directory
+        id: detect
+        run: |
+          # look for common build output directories first
+          for d in dist build public out; do
+            if [ -d "$d" ]; then
+              echo "Detected build dir=$d"
+              echo "BUILD_DIR=$d" >> $GITHUB_ENV
+              exit 0
+            fi
+          done
+          # fallback: search for an index.html anywhere (maxdepth 4)
+          idx=$(find . -maxdepth 4 -type f -name index.html | head -n 1 || true)
+          if [ -n "$idx" ]; then
+            dir=$(dirname "$idx")
+            echo "Found index.html at $idx; using $dir"
+            echo "BUILD_DIR=$dir" >> $GITHUB_ENV
+          else
+            # final fallback to dist so existing config expecting dist still works
+            echo "No build dir detected; defaulting BUILD_DIR=dist"
+            echo "BUILD_DIR=dist" >> $GITHUB_ENV
+          fi
+
       - name: Show build output
         run: |
           echo "Working directory: $(pwd)"
+          echo "Build directory: $BUILD_DIR"
           echo "Node version: $(node --version || echo 'node not found')"
           echo "NPM version: $(npm --version || echo 'npm not found')"
-          if [ ! -d "./dist" ]; then
-            echo "ERROR: ./dist directory not found. Build didn't output the site to ./dist."
+          if [ ! -d "$BUILD_DIR" ]; then
+            echo "ERROR: $BUILD_DIR directory not found. Build didn't output the site to $BUILD_DIR."
             ls -la
             exit 1
           fi
-          echo "Contents of ./dist (top 200 entries):"
-          ls -laR ./dist | sed -n '1,200p'
-          echo "Check for index.html at root of ./dist:"
-          if [ ! -f "./dist/index.html" ]; then
-            echo "ERROR: ./dist/index.html not found. Ensure your build writes index.html to ./dist/"
-            find ./dist -type f -maxdepth 3 -print | sed -n '1,200p'
+          echo "Contents of $BUILD_DIR (top 200 entries):"
+          ls -laR "$BUILD_DIR" | sed -n '1,200p'
+          echo "Check for index.html at root of $BUILD_DIR:"
+          if [ ! -f "$BUILD_DIR/index.html" ]; then
+            echo "ERROR: $BUILD_DIR/index.html not found. Ensure your build writes index.html to $BUILD_DIR/"
+            find "$BUILD_DIR" -type f -maxdepth 3 -print | sed -n '1,200p'
             exit 1
           fi
       - name: Setup Pages
@@ -62,8 +88,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5
         with:
-          # Upload dist folder
-          path: './dist'
+          path: ${{ env.BUILD_DIR }}
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@cd2ce8fcbc39b97be8ca5fce6e763baed58fa128 # v5
