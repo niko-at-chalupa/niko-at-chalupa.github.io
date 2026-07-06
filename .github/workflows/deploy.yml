@@ -39,6 +39,24 @@ jobs:
         run: npm ci
       - name: Build
         run: npm run build
+      - name: Show build output
+        run: |
+          echo "Working directory: $(pwd)"
+          echo "Node version: $(node --version || echo 'node not found')"
+          echo "NPM version: $(npm --version || echo 'npm not found')"
+          if [ ! -d "./dist" ]; then
+            echo "ERROR: ./dist directory not found. Build didn't output the site to ./dist."
+            ls -la
+            exit 1
+          fi
+          echo "Contents of ./dist (top 200 entries):"
+          ls -laR ./dist | sed -n '1,200p'
+          echo "Check for index.html at root of ./dist:"
+          if [ ! -f "./dist/index.html" ]; then
+            echo "ERROR: ./dist/index.html not found. Ensure your build writes index.html to ./dist/"
+            find ./dist -type f -maxdepth 3 -print | sed -n '1,200p'
+            exit 1
+          fi
       - name: Setup Pages
         uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6
       - name: Upload artifact
