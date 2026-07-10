@@ -21,7 +21,8 @@ html, body {
   position: fixed;
   inset: 0;
   background: #151217;
-  opacity: 0;
+  /* Starts at 1 to allow the initial page load fade-in transition */
+  opacity: 1;
   pointer-events: none;
   z-index: 9999;
   display: flex;
