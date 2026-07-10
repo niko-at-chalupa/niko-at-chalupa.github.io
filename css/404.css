@@ -7,6 +7,10 @@
   border-radius: 3px;
 }
 
+#notfound-noanim {
+  padding: 0 4px;
+}
+
 body {
   display: flex;
   flex-direction: column;
@@ -24,4 +28,30 @@ body {
 #goback {
   font-size: 0.8333em;
   visibility: hidden;
+}
+
+
+#headertexts {
+  position: relative;
+}
+
+#headertext-nonanimated {
+  position: relative; /* stays in normal flow, defines the box size */
+  opacity: 0.2;
+  z-index: 1;
+  user-select: none;
+  -webkit-user-select: none;
+  pointer-events: none;
+  margin: 0px;
+}
+
+#headertext-animated {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  visibility: hidden;
+  z-index: 2;
+  margin: 0px;
+
 }

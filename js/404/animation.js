@@ -17,7 +17,7 @@ function playAnimation() {
     opacity: 0,
     duration: 0.3,
     ease: "power1.out",
-    stagger: 0.05,
+    stagger: 0.04,
     rotationX: 40,
   });
 
@@ -65,7 +65,7 @@ function playAnimation() {
 
 function setup() {
   if (split) split.revert();
-  const target = document.querySelector("#header");
+  const target = document.querySelector("#headertext-animated");
   if (target) {
     split = new SplitText(target, { type: "words" });
     gsap.set(target, { visibility: "visible" });
