@@ -10,7 +10,7 @@ const overlay = document.querySelector("#page-transition-overlay");
 if (overlay) {
   gsap.to(overlay, { 
     opacity: 0, 
-    duration: 0.3, 
+    duration: 0.15, 
     ease: "power1.in" 
   });
 }
