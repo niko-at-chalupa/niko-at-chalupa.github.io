@@ -14,8 +14,9 @@
 #header-description {
   padding: 11px;
   display: flex;
-  justify-content: space-between; 
+  justify-content: center; 
   align-items: center;
+  flex-direction: row;
 }
 
 #rustandpython {
@@ -47,4 +48,14 @@
   width: 100%;
   visibility: hidden;
   z-index: 2;
+}
+
+.fa-brands {
+  color: currentColor;
+  transition: color 0.2s ease;
+  font-size: 2rem;
+  margin: 2px;
+}
+a:hover .fa-brands {
+  color: #ddb9f8;
 }

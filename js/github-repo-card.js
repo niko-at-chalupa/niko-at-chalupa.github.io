@@ -23,6 +23,12 @@
  *   maxLangs     number of languages to show before collapsing into
  *                "Other" (default 5)
  *   token        optional GitHub token to raise the API rate limit
+ *   width        fixed card width in px (default 380). Applied to both
+ *                the loading skeleton and the finished card so the
+ *                element never resizes once data arrives.
+ *   height       fixed card height in px (default 220). Same reasoning
+ *                as `width` — set this to whatever height your finished
+ *                cards typically render at for your content.
  * ------------------------------------------------------------------
  */
 
@@ -59,6 +65,13 @@ const FONTS = {
   heading: "'Space Grotesk', ui-sans-serif, system-ui, sans-serif",
   body: "'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace",
 };
+
+/* ------------------------------------------------------------------ */
+/* Default fixed dimensions. Override via opts.width / opts.height or  */
+/* data-ghrc-width / data-ghrc-height.                                 */
+/* ------------------------------------------------------------------ */
+const DEFAULT_WIDTH = 380;
+const DEFAULT_HEIGHT = 220;
 
 /* ------------------------------------------------------------------ */
 /* Helpers                                                             */
@@ -110,10 +123,46 @@ function computeLanguages(bytesByLang, maxLangs) {
   return list;
 }
 
+/**
+ * Apply the fixed width/height to a card-like element (skeleton, error,
+ * or finished card) so every state of the component occupies exactly
+ * the same box. Using inline styles here (rather than only CSS) means
+ * per-instance width/height options always win, regardless of theme
+ * class or stylesheet load order.
+ */
+function applyFixedSize(el, options) {
+  el.style.width = `${options.width}px`;
+  el.style.height = `${options.height}px`;
+}
+
 /* ------------------------------------------------------------------ */
 /* Styles — injected once, scoped under .ghrc-card                    */
 /* ------------------------------------------------------------------ */
+function injectFontLinks() {
+  const FONT_LINK_ID = "ghrc-font-links";
+  if (document.getElementById(FONT_LINK_ID)) return;
+
+  // Preconnects speed up the actual font fetch below.
+  const preconnect1 = document.createElement("link");
+  preconnect1.rel = "preconnect";
+  preconnect1.href = "https://fonts.googleapis.com";
+
+  const preconnect2 = document.createElement("link");
+  preconnect2.rel = "preconnect";
+  preconnect2.href = "https://fonts.gstatic.com";
+  preconnect2.crossOrigin = "anonymous";
+
+  const fontSheet = document.createElement("link");
+  fontSheet.id = FONT_LINK_ID;
+  fontSheet.rel = "stylesheet";
+  fontSheet.href =
+    "https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap";
+
+  document.head.append(preconnect1, preconnect2, fontSheet);
+}
+
 function injectStyles() {
+  injectFontLinks();
   if (document.getElementById(STYLE_ID)) return;
   const style = document.createElement("style");
   style.id = STYLE_ID;
@@ -129,8 +178,6 @@ function injectStyles() {
     --ghrc-avatar-bg: #1c2027;
     --ghrc-radius: 12px;
     position: relative;
-    width: 100%;
-    max-width: 380px;
     box-sizing: border-box;
     background: var(--ghrc-bg);
     border: 1px solid var(--ghrc-border);
@@ -139,7 +186,8 @@ function injectStyles() {
     font-family: ${FONTS.body};
     color: var(--ghrc-text);
     text-decoration: none;
-    display: block;
+    display: flex;
+    flex-direction: column;
     opacity: 0;
     transform: translateY(14px);
     overflow: hidden;
@@ -157,7 +205,7 @@ function injectStyles() {
     --ghrc-avatar-bg: #eef0f3;
   }
 
-  .ghrc-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
+  .ghrc-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; flex: 0 0 auto; }
   .ghrc-titleblock { min-width: 0; }
   .ghrc-owner {
     font-size: 11px; color: var(--ghrc-text-dim); letter-spacing: .02em;
@@ -190,11 +238,15 @@ function injectStyles() {
     color: var(--ghrc-text-dim);
     display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
     overflow: hidden;
+    flex: 0 0 auto;
   }
 
   .ghrc-langs-labels {
     display: flex; flex-wrap: wrap; gap: 4px 12px;
     font-size: 10.5px; color: var(--ghrc-text-dim); margin-bottom: 6px;
+    overflow: hidden;
+    max-height: 34px;
+    flex: 0 0 auto;
   }
   .ghrc-lang-chip { display: inline-flex; align-items: center; gap: 5px; white-space: nowrap; }
   .ghrc-dot { width: 7px; height: 7px; border-radius: 50%; flex: 0 0 auto; }
@@ -203,12 +255,14 @@ function injectStyles() {
   .ghrc-bar {
     display: flex; width: 100%; height: 6px; border-radius: 4px;
     overflow: hidden; background: var(--ghrc-border);
+    flex: 0 0 auto;
   }
   .ghrc-seg { height: 100%; width: 0%; }
 
   .ghrc-stats {
     display: flex; align-items: center; gap: 14px;
     margin-top: 12px; font-size: 11px; color: var(--ghrc-text-dim);
+    flex: 0 0 auto;
   }
   .ghrc-stat { display: inline-flex; align-items: center; gap: 4px; }
   .ghrc-stat svg { width: 12px; height: 12px; opacity: .8; }
@@ -218,10 +272,11 @@ function injectStyles() {
   .ghrc-stat.ghrc-fork svg { opacity: 1; }
   .ghrc-updated { margin-left: auto; }
 
+  /* Skeleton and error states reuse the same box (width/height are set
+     inline per-instance via applyFixedSize) — just center their content. */
   .ghrc-skeleton {
     opacity: 1 !important; transform: none !important;
-    display: flex; align-items: center; justify-content: center;
-    min-height: 196px;
+    align-items: center; justify-content: center;
   }
   .ghrc-loading {
     color: var(--ghrc-text-dim); font-size: 12px; letter-spacing: .02em;
@@ -230,6 +285,7 @@ function injectStyles() {
   .ghrc-error {
     font-size: 12px; color: var(--ghrc-text-dim); opacity: 1 !important;
     transform: none !important;
+    align-items: center; justify-content: center; text-align: center;
   }
   `;
   document.head.appendChild(style);
@@ -258,6 +314,7 @@ function buildCard(repo, langs, opts) {
   card.href = repo.html_url;
   card.target = "_blank";
   card.rel = "noopener noreferrer";
+  applyFixedSize(card, opts);
 
   const langLabels = langs
     .map(
@@ -343,13 +400,21 @@ function animateIn(card) {
  */
 export async function renderRepoCard(target, repoSlug, opts = {}) {
   injectStyles();
-  const options = { theme: "dark", maxLangs: 5, token: null, ...opts };
+  const options = {
+    theme: "dark",
+    maxLangs: 5,
+    token: null,
+    width: DEFAULT_WIDTH,
+    height: DEFAULT_HEIGHT,
+    ...opts,
+  };
   const container = typeof target === "string" ? document.querySelector(target) : target;
   if (!container) throw new Error(`ghrc: target "${target}" not found`);
 
   const skeleton = document.createElement("div");
   skeleton.className = `ghrc-card ghrc-skeleton${options.theme === "light" ? " ghrc-light" : ""}`;
   skeleton.innerHTML = skeletonMarkup();
+  applyFixedSize(skeleton, options);
   container.innerHTML = "";
   container.appendChild(skeleton);
 
@@ -369,14 +434,20 @@ export async function renderRepoCard(target, repoSlug, opts = {}) {
       err.status === 404 ? `Repo "${repoSlug}" not found` :
       err.status === 403 ? "GitHub API rate limit hit" :
       "Couldn't load repo";
-    container.innerHTML = `<div class="ghrc-card ghrc-error${options.theme === "light" ? " ghrc-light" : ""}">${message}</div>`;
+    const errorEl = document.createElement("div");
+    errorEl.className = `ghrc-card ghrc-error${options.theme === "light" ? " ghrc-light" : ""}`;
+    errorEl.textContent = message;
+    applyFixedSize(errorEl, options);
+    container.innerHTML = "";
+    container.appendChild(errorEl);
     throw err;
   }
 }
 
 /**
  * Scan the document for `[data-ghrc]` placeholders and render each one.
- * `data-ghrc="owner/repo"`, optional `data-ghrc-theme`, `data-ghrc-max-langs`.
+ * `data-ghrc="owner/repo"`, optional `data-ghrc-theme`, `data-ghrc-max-langs`,
+ * `data-ghrc-width`, `data-ghrc-height`.
  */
 export function initRepoCards(root = document) {
   const nodes = root.querySelectorAll("[data-ghrc]");
@@ -384,7 +455,9 @@ export function initRepoCards(root = document) {
     const repoSlug = el.getAttribute("data-ghrc");
     const theme = el.getAttribute("data-ghrc-theme") || "dark";
     const maxLangs = Number(el.getAttribute("data-ghrc-max-langs")) || 5;
-    renderRepoCard(el, repoSlug, { theme, maxLangs }).catch(() => {});
+    const width = Number(el.getAttribute("data-ghrc-width")) || DEFAULT_WIDTH;
+    const height = Number(el.getAttribute("data-ghrc-height")) || DEFAULT_HEIGHT;
+    renderRepoCard(el, repoSlug, { theme, maxLangs, width, height }).catch(() => {});
   });
 }
 
