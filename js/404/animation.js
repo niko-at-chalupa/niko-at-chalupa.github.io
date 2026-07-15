@@ -11,14 +11,11 @@ function playAnimation() {
   if (!split || !split.words) return;
   
   animation = gsap.timeline();
-
-  // 1. Fade in the words
   animation.from(split.words, {
-    opacity: 0,
     duration: 0.3,
     ease: "power1.out",
     stagger: 0.04,
-    rotationX: 40,
+    
   });
 
   // 2. Animate the backgrounds growing
