@@ -1,0 +1,8 @@
+{
+  "name": "GelbooruCommands",
+  "description": "Create slash commands that post a random Gelbooru image.",
+  "authors": [{ "name": "Nikole" }],
+  "main": "index.js",
+  "vendetta": { "icon": "ic_image_24px" },
+  "hash": "76fff6c52abde1af7a2b3422e7e4c4f8787338bbcf036783184a3c6b6ca10564"
+}
